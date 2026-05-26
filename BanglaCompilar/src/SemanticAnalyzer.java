@@ -241,4 +241,3 @@ public class SemanticAnalyzer {
 
         return Integer.parseInt(sb.toString());
     }
-}
