@@ -76,8 +76,9 @@ public class TargetCodeGenerator {
     }
 
     // Convert AST expressions to Python code expressions
+    // Handles numbers, strings, booleans, variables, and binary operations
     private String generateExpression(ASTNode node) {
-        // Handle numeric literals
+        // Handle numeric literals (integer values)
         if (node instanceof NumberNode) {
             return String.valueOf(((NumberNode) node).value);
         }
@@ -105,10 +106,11 @@ public class TargetCodeGenerator {
         return "None";
     }
 
-    // Add Python helper functions and header comments
+    // Add Python helper functions and header comments at the beginning of generated code
     private void appendPythonPrelude(StringBuilder pyCode) {
         pyCode.append("# Auto-generated Python Target Code from Bangla Compiler\n\n");
-        pyCode.append("def trunc_div(a, b):\n");  // Define truncating integer division
+        // Define truncating integer division function for proper division semantics
+        pyCode.append("def trunc_div(a, b):\n");
         pyCode.append("    if b == 0:\n");
         pyCode.append("        raise ZeroDivisionError('division by zero')\n");
         pyCode.append("    return int(a / b)\n\n");
@@ -122,6 +124,8 @@ public class TargetCodeGenerator {
         }
     }
 
+    // Convert intermediate code instructions into properly indented Python statements
+    // Handles control flow like if/else and while loops using label positions
     private void emitInstructionRange(
         List<Instruction> instructions,
         int start,

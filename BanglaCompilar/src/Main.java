@@ -14,8 +14,10 @@ import java.util.List;
 // 5. Code Optimization
 // 6. Target Code Generation (Python)
 public class Main {
+    // Main entry point for Bangla compiler
+    // Orchestrates all compilation phases: Lexing, Parsing, Semantic Analysis, Code Generation, Optimization
     public static void main(String[] args) {
-        // Get input and output file paths from arguments or use defaults
+        // Get input and output file paths from command-line arguments or use default files
         String inputFilePath = args.length > 0 ? args[0] : "input.bn";
         String outputFilePath = args.length > 1 ? args[1] : "output.txt";
         // Current working directory
@@ -38,10 +40,11 @@ public class Main {
         }
         try (PrintWriter out = new PrintWriter(outputPath.toFile(), StandardCharsets.UTF_8)) {
             try {
+                // ========== BEGIN COMPILATION PIPELINE ==========
                 // Read source code from Bangla file
                 String source = Files.readString(inputPath, StandardCharsets.UTF_8);
 
-                // Step 1: Lexical Analysis - Convert source to tokens
+                // Step 1: Lexical Analysis - Convert source text to tokens
                 Lexer lexer = new Lexer(source);
                 List<Token> tokens = lexer.scanTokens();
 
@@ -82,7 +85,7 @@ public class Main {
                     }
                 }
 
-                // Step 4: Intermediate Code Generation
+                // Step 4: Intermediate Code Generation - Convert AST to three-address code
                 IntermediateCodeGenerator icg = new IntermediateCodeGenerator();
                 List<Instruction> instructions = icg.generate(astNodes);
                 
@@ -91,7 +94,7 @@ public class Main {
                     out.println(inst.toString());
                 }
 
-                // Step 5: Code Optimization - Constant folding, dead code removal
+                // Step 5: Code Optimization - Apply constant folding and dead code elimination
                 Optimizer optimizer = new Optimizer();
                 List<Instruction> optimized = optimizer.optimize(instructions);
 
@@ -105,7 +108,7 @@ public class Main {
                     out.println("  " + inst.toString());
                 }
 
-                // Step 6: Target Code Generation - Generate Python code
+                // Step 6: Target Code Generation - Convert AST to executable Python code
                 TargetCodeGenerator tcg = new TargetCodeGenerator();
                 String pythonCode = tcg.generatePythonFromAST(astNodes);
                 
@@ -137,8 +140,10 @@ public class Main {
         }
     }
 
+    // Helper method: Recursively print AST tree structure with proper indentation
     public static void writeTreeToFile(ASTNode node, int indent, PrintWriter out) {
         String p = "  ".repeat(indent);
+        // Handle different node types and display them in a tree format
         if (node instanceof AssignNode) {
             AssignNode a = (AssignNode) node;
             out.println(p + "Assignment: " + a.name);

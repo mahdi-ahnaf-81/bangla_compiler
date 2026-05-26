@@ -7,9 +7,10 @@ import java.util.*;
 public class Optimizer {
     private final List<String> optimizationLog = new ArrayList<>();
 
-    // Main optimization method: applies various optimization techniques
+    // Main optimization method: applies various optimization techniques to intermediate code
+    // Techniques: Constant Folding, Constant Propagation, Dead Code Elimination
     public List<Instruction> optimize(List<Instruction> original) {
-        // Copy instructions while preserving control flow statements
+        // Copy instructions while preserving control flow statements (LABEL, GOTO, IF_FALSE_GOTO)
         List<Instruction> code = new ArrayList<>();
         for (Instruction inst : original) {
             if (inst.type.equals("LABEL") || inst.type.equals("GOTO") || 
@@ -20,7 +21,7 @@ public class Optimizer {
             }
         }
 
-        // Check if code contains control flow (loops, conditionals)
+        // Check if code contains control flow (loops, conditionals) - skip optimization if present
         boolean hasControlFlow = false;
         for (Instruction inst : code) {
             if (inst.type.equals("LABEL") || inst.type.equals("GOTO") || 
@@ -40,7 +41,7 @@ public class Optimizer {
                 if (isControlFlow(inst)) continue;
 
 
-                // Constant Propagation: Replace variables with their constant values
+                // Constant Propagation: Replace variable references with known constant values
                 if (inst.arg1 != null && constants.containsKey(inst.arg1)) {
                     String oldArg = inst.arg1;
                     inst.arg1 = constants.get(inst.arg1);
@@ -86,7 +87,7 @@ public class Optimizer {
             }
         }
 
-        // Dead Code Elimination: Remove unused temporary variables
+        // Dead Code Elimination: Remove assignments to temporary variables that are never used
         Set<String> usedVars = new HashSet<>();
         for (Instruction inst : code) {
             if (inst.arg1 != null) usedVars.add(inst.arg1);
@@ -109,7 +110,7 @@ public class Optimizer {
                inst.type.equals("IF_FALSE_GOTO") || inst.type.equals("PRINT");
     }
 
-    // Convert Bangla numerals to Java integers for arithmetic operations
+    // Helper: Convert Bangla numerals (০-৯) to Java integers for arithmetic operations
     private Integer tryParseBangla(String s) {
         if (s == null || s.isEmpty()) return null;
         try {
@@ -129,7 +130,7 @@ public class Optimizer {
         }
     }
 
-    // Perform arithmetic operations for constant folding
+    // Helper: Perform arithmetic operations (+, -, *, /) for compile-time constant evaluation
     private Integer fold(int left, String operator, int right) {
         switch (operator) {
             case "+": return left + right;
