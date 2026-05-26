@@ -12,6 +12,7 @@ class NumberNode extends ASTNode {
 
     public int getValue() {
         return value;
+        return null;
     }
 }
 
